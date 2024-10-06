@@ -1,4 +1,3 @@
--- Write SQL queries to answer these questions using the data you have loaded into BigQuery:
--- 1. Find the top 5 users with the highest number of posts.
--- 2. For each of these top 5 users, calculate the average post length.
--- 3. Identify the day of the week when the most `lengthy` posts are created (assume all posts were created in the UTC timezone).
+SELECT userID, LENGTH(post) as post_length FROM user_posts_info ORDER BY post_length DESC LIMIT 5;
+SELECT userID, AVG(LENGTH(title) + LENGTH(body)) AS avg_post_length FROM user_posts_info WHERE userID IN (SELECT userID FROM user_posts_info ORDER BY LENGTH(body) DESC LIMIT 5) GROUP BY userID;
+SELECT EXTRACT(DAYOFWEEK FROM TIMESTAMP_SECONDS(1609459200 + (id * 86400))) AS day_of_week, COUNT(*) AS post_count FROM user_posts_info WHERE status = 'lengthy' GROUP BY day_of_week ORDER BY post_count DESC LIMIT 1;
